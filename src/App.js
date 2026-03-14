@@ -33,6 +33,17 @@ app.use("/", (err, req, res, next) => {
 });
 
 
+// A way to handle the error in the route and send the response to the client using next() function
+app.get("/getUser",(req,res,next)=>{
+    const err = new Error("Something went wrong");
+    next(err);
+});
+
+app.use((err,req,res,next)=>{
+    res.status(500).send("Something went wrong!!");
+});
+
+
 //It is used to start the server and listen for incoming requests on a specific port
 app.listen(7777, () => {
     console.log("Server is created successfully!");
