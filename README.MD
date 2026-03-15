@@ -10,3 +10,15 @@ It is an API developement and testing tool used to send http requests(diffrenet 
 
 <!-- IMP -->
 If a route handler does not send a response, the client request remains pending because the server keeps the connection open until a response is sent or a timeout occurs.
+
+<!-- IMP -->
+It is better to connect the database first before starting the server in applications using Node.js and Express.js with MongoDB.
+Once the server starts, it begins receiving API requests that may require database access.
+If the database is not connected, those requests may fail, so the database connection should be established first.
+
+
+<!-- Connecting Node.js application to MongoDB using mongoose -->
+-A network request is sent to the MongoDB server.
+-The server authenticates the credentials.
+-A database connection is established.
+-A response is sent back to the application.
