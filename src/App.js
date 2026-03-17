@@ -52,6 +52,30 @@ app.post("/signup", async (req, res) => {
     }
 });
 
+//login API to authenticate the user 
+app.post("/login", async(req, res) => {
+    const { email, password} = req.body;
+
+    try{
+        const user = await User.findOne({email: email});
+        if(!user){
+            res.status(404).send("User not found!!");
+        }
+
+        const isPasswordMatch = await bcrypt.compare(password,user.password);
+        if(!isPasswordMatch){
+            res.status(404).send("Enter appropriate credentials!!");
+        }
+        else{
+            res.send("User is logged successfully!!");
+        }
+    }
+    catch(err){
+        res.status(400).send("Error: " +err.message);
+    }
+})
+
+
 //Get the users(multiple user can have same email(we have not set the rules yet so it is possible)) with the given email from the database
 app.get("/user", async (req, res) => {
     const userEmail = req.body.email;
