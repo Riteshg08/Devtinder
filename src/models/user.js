@@ -26,7 +26,7 @@
           //   }
             
           validate(value){
-               if(validator.isEmail(value) || validator.isLowercase(value)){
+               if(!validator.isEmail(value) || !validator.isLowercase(value)){
                     throw new Error("Email must be a valid email address!");
                }
           }
@@ -58,7 +58,8 @@
        },
        about: {
           type: String,
-          default: "I'am xyz. I am a software developer with 5 years of experience in web development. I have worked on various projects and have a strong background in JavaScript, Node.js, and MongoDB."
+          default: "I'am xyz. I am a software developer with 5 years of experience in web development. I have worked on various projects and have a strong background in JavaScript, Node.js, and MongoDB.",
+          maxLength: 250
        }
  },{timestamps: true});
 
