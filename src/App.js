@@ -6,6 +6,7 @@ const User = require("./models/user");
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
+const { authUser } = require("./middlewares/auth");
 
 const { validateSignupData } = require("./utils/validator");
 
@@ -69,18 +70,20 @@ app.post("/login", async (req, res) => {
             return res.status(404).send("User not found!!");
         }
 
-        const isPasswordMatch = await bcrypt.compare(password, user.password);
+        //logic is writtenin the user model
+        const isPasswordMatch = await user.comparePasswords(password);
 
         if (!isPasswordMatch) {
             throw new Error("Enter appropriate credentials!!");
         }
         else {
             //creating a JWT token
-            const token = await jwt.sign({ userId: user._id }, "Devtinder@namastenode");
+            //logic is written in the user model
+            const token = await user.getJWT();
             console.log(token);
 
             // Add the token to cookie and send the response to the client
-            res.cookie("token", token);
+            res.cookie("token", token, { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), httpOnly: true });
             res.send("User is logged successfully!!");
         }
     }
@@ -89,150 +92,25 @@ app.post("/login", async (req, res) => {
     }
 })
 
-app.get("/profile", async (req, res) => {
+app.get("/profile", authUser, async (req, res) => {
     //get the token from the cookie
     try {
-        const cookie = req.cookies;
-
-        const { token } = cookie;
-        if(!token){
-            throw new Error("Invalid token!!");
-        }
-
-        const decodedToken = await jwt.verify(token, "Devtinder@namastenode");
-
-        const user = await User.findById(decodedToken.userId);
-        if (!user) {
-           throw new Error("User not found!!");
-        } 
-        res.send(user);
+        res.send(req.user);
     }
     catch (err) {
         res.status(400).send("Error: " + err.message);
     }
 
+});
+
+app.post("/sendconnectionrequest", authUser, async (req, res) => {
+    try {
+        res.send("Connection request sent successfully!!");
+    }
+    catch (err) {
+        res.status(400).send("Error: " + err.message);
+    }
 })
-
-
-//Get the users(multiple user can have same email(we have not set the rules yet so it is possible)) with the given email from the database
-app.get("/user", async (req, res) => {
-    const userEmail = req.body.email;
-    try {
-
-        const users = await User.find({ email: userEmail });
-        //here users is the array of user objects that match the given email, if there are no users with the given email then it will be an empty array
-        if (users.length === 0) {
-            res.status(404).send("User not found");
-        } else {
-            res.send(users);
-        }
-    } catch (err) {
-        res.status(400).send("Something went wrong!!");
-    }
-});
-
-//It is used to replace the exisiting docs with new doc and return the old doc by default
-//We can change it by passing the third parameter as {new:true} to return the new doc instead of old doc
-app.get("/userreplace", async (req, res) => {
-    try {
-        const users = await User.findOneAndReplace({ firstName: "Sunita" }, {
-            firstName: "Shreya",
-            lastName: "Ghoshal",
-            email: "shreya.ghoshal@example.com",
-            age: 45,
-            gender: "Female",
-            password: "shreya123"
-        }, { returnDocument: "after" });
-
-        if (!users) {
-            res.status(404).send("User not found");
-        } else {
-            res.send(users);
-        }
-    } catch (err) {
-        res.status(400).send("Something went wrong!!");
-    }
-});
-
-//Get all the users from the database
-app.get("/feed", async (req, res) => {
-    try {
-        const users = await User.find();
-        res.send(users);
-    }
-    catch (err) {
-        res.status(500).send("Error:" + err.message);
-    }
-});
-
-//Deleting the existing user from the database with the given user id
-app.delete("/user", async (req, res) => {
-    const userId = req.body.userId;
-    try {
-        //const user = await User.findByIdAndDelete({_id:userId});
-        //Below is the shorthand of the above line of code
-        const user = await User.findByIdAndDelete(userId);
-        if (!user) {
-            res.status(404).send("User not found");
-        }
-        else {
-            res.send("User is deleted successfully!");
-        }
-    }
-    catch (err) {
-        res.status(400).send("Something went wrong!!");
-    }
-});
-
-//Update the existing user in the database with the given user id and new data
-app.patch("/user/:userId", async (req, res) => {
-    const userId = req.params?.userId;
-    const data = req.body;
-    try {
-        //API VALIDATION
-        //we want to allow only certain fields to be updated and we want to validate the updates before updating the user in the database
-        const allowedUpdates = ["gender", "age", "about", "skills"];
-        const canUpdate = Object.keys(data).every((key) => allowedUpdates.includes(key));
-        if (!canUpdate) {
-            res.status(400).send("Invalid updates!!");
-        }
-
-        if (data.skills.length > 10) {
-            res.status(400).send("You can add maximum 10 skills!!");
-        }
-
-
-        const user = await User.findByIdAndUpdate(userId, data, { returnDocument: "after", runValidators: true });
-        if (!user) {
-            res.status(404).send("User not found");
-        }
-        else {
-            res.send(user);
-        }
-    }
-    catch (err) {
-        res.status(400).send("Error:" + err.message);
-    }
-});
-
-//--it can handle all email,id,gender etc
-// app.patch("/user",async(req,res) =>{
-//     const userEmail = req.body.email;
-//     const data = req.body;
-//     try{
-//         const user = await User.findOneAndUpdate({ email: userEmail }, data, { returnDocument: "after" });
-//         if(!user){
-//             res.status(404).send("User not found");
-//         }
-//         else{
-//             res.send(user);
-//         }
-//     }
-//     catch(err){
-//         res.status(400).send("Something went wrong!!");
-//     }
-// });
-
 
 connectDB()
     .then(() => {
