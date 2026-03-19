@@ -66,6 +66,7 @@ authRouter.post("/login", async (req, res) => {
         else {
             //creating a JWT token
             //logic is written in the user model
+            //Every user of have there own method getJWT() and comparePasswords() and we can call those methods using the user instance
             const token = await user.getJWT();
 
             // Add the token to cookie and send the response to the client
@@ -77,6 +78,19 @@ authRouter.post("/login", async (req, res) => {
         res.status(400).send("Error: " + err.message);
     }
 })
+
+authRouter.post("/logout", async (req, res) => {
+    try {
+        res.cookie("token", null, {
+            expires: new Date(Date.now()),
+        });
+        // res.clearCookie("token");
+        res.send("User is logout successfully!!");
+    }
+    catch (err) {
+        res.status(400).send("Error: " + err.message);
+    }
+});
 
 module.exports = {
     authRouter
