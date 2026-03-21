@@ -5,10 +5,12 @@ const connectionRequestSchema = new mongoose.Schema({
     fromUserId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
+        ref: "User"
     },
     toUserId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
+        ref: "User"
     },
     status: {
         type: String,
@@ -29,14 +31,16 @@ const connectionRequestSchema = new mongoose.Schema({
 //TO solve ablove problem we will use compound index
 connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 });
 
-connectionRequestSchema.pre("save", function (next) {
-    const connectionRequest = this;
-    //check if the fromUserId is same as toUserId
-    if (connectionRequest.fromUserId.equals(connectionRequest.toUserId)) {
-        throw new Error("Cannot send connection request to self!");
-    }
-    next();
-});
+// connectionRequestSchema.pre("save", function (next) {
+//     const connectionRequest = this;
+//     //check if the fromUserId is same as toUserId
+//     // fromUserId and toUserId are usually ObjectId types so therefore we cant do fromUserID === toUserId
+//     // it we do this it will check wheather they are pointing to same object or not
+//     if (connectionRequest.fromUserId.equals(connectionRequest.toUserId)) {
+//         throw new Error("Cannot send connection request to self!");
+//     }
+//     next();
+// });
 
 
 module.exports = mongoose.model("connectionRequest", connectionRequestSchema); 
