@@ -3,6 +3,7 @@ const express = require("express");
 const userRouter = express.Router();
 const { authUser } = require("../middlewares/auth");
 const ConnectionRequest = require("../models/connectionRequest.js")
+const User = require("../models/user.js")
 
 //Get all the pending connection request for the loggedIn user
 userRouter.get("/user/request/received", authUser, async (req, res) => {
@@ -24,6 +25,7 @@ userRouter.get("/user/request/received", authUser, async (req, res) => {
     }
 });
 
+//Showing all connection 
 userRouter.get("/user/connection", authUser, async (req, res) => {
     try {
         const loggedInUser = req.user;
@@ -33,7 +35,7 @@ userRouter.get("/user/connection", authUser, async (req, res) => {
                 { toUserId: loggedInUser._id, status: "accepted" },
                 { fromUser: loggedInUser._id, status: "accepted" }
             ]
-        }).populate("fromUserId","firstName lastName age skills about").populate("toUserId","firstName lastName age skills about");
+        }).populate("fromUserId", "firstName lastName age skills about").populate("toUserId", "firstName lastName age skills about");
 
         const data = connectionRequest.map((row) => {
             if (row.fromUserId._id.toString() === loggedInUser._id.toString()) {
@@ -50,7 +52,51 @@ userRouter.get("/user/connection", authUser, async (req, res) => {
     catch (err) {
         res.status(400).send("Error: " + err.message);
     }
-})
+});
+
+userRouter.get("/feed", authUser, async (req, res) => {
+    try {
+        const loggedInUser = req.user;
+        const page = parseInt(req.query.page);
+        let limit = parseInt(req.query.limit);
+        limit = limit>50? 50 : limit;
+        const skipPages = (page-1)*limit;
+
+        //In the feed we will see all the profiles except
+        /* 1. Yourself
+           2. User who have send request to you or the user whome you have sent request [pending stage or ignored]
+           3. Connections
+        */
+
+        const connectionRequest = await ConnectionRequest.find({
+            $or: [
+                { fromUserId: loggedInUser._id },
+                { toUserId: loggedInUser._id }
+            ]
+        }).select("fromUserId toUserId");
+
+        const hideUsersFromFeed = new Set();
+        connectionRequest.forEach((req) => {
+            hideUsersFromFeed.add(req.fromUserId.toString());
+            hideUsersFromFeed.add(req.toUserId.toString());
+        });
+
+        const users = await User.find({
+            $and: [
+                { _id: { $nin: Array.from(hideUsersFromFeed) } },
+                { _id: { $ne: loggedInUser._id } }
+            ]
+        })
+        .select("firstName lastName age skills about")
+        .skip(skipPages)
+        .limit(limit);
+
+        res.send(users);
+    }
+    catch (err) {
+        res.status(400).send("Error: " + err.message);
+    }
+});
 
 module.exports = {
     userRouter
