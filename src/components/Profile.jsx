@@ -3,9 +3,9 @@ import { useSelector } from "react-redux";
 
 const Profile = () => {
     const user = useSelector((state) => state.user);
-    return (
+    return user && (
         <>
-            <EditProfile user={user}/>
+            <EditProfile user={user} />
         </>
     );
 };

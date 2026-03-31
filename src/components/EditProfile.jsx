@@ -6,14 +6,15 @@ import { addUser } from "../utils/userSlice";
 import axios from "axios";
 
 const EditProfile = ({ user }) => {
-    if (!user) return;
     const [firstName, setFirstName] = useState(user?.firstName);
     const [lastName, setLastName] = useState(user?.lastName);
     const [age, setAge] = useState(user?.age);
     const [about, setAbout] = useState(user?.about);
+    const [photoUrl, setPhotoUrl] = useState(user?.photoUrl);
     const [error, setError] = useState("");
     const [showToast, setShowToast] = useState(false);
-
+    
+    if (!user) return null;
 
     const dispatch = useDispatch();
 
@@ -21,7 +22,7 @@ const EditProfile = ({ user }) => {
         setError("");
         try {
             const res = await axios.patch(BASE_URL + "/profile/edit", {
-                firstName, lastName, age, about
+                firstName, lastName, age, about, photoUrl
             }, {
                 withCredentials: true
             })
@@ -30,6 +31,7 @@ const EditProfile = ({ user }) => {
             setTimeout(() => {
                 setShowToast(false);
             }, 3000);
+            console.log("Api success",res);
         }
         catch (err) {
             setError(err?.response?.data || "Something went wrong");
@@ -67,7 +69,7 @@ const EditProfile = ({ user }) => {
                         </div>
                     </div>
                 </div>
-                <UserCard user={{ firstName, lastName, age, about }} />
+                <UserCard user={{ firstName, lastName, age, about, photoUrl }} />
             </div>
             {showToast && (<div className="toast toast-top toast-center">
                 <div className="alert alert-success">
@@ -80,3 +82,7 @@ const EditProfile = ({ user }) => {
 };
 
 export default EditProfile;
+
+
+
+

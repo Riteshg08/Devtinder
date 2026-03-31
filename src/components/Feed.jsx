@@ -26,9 +26,14 @@ const Feed = () => {
     useEffect(() => {
         getFeed();
     }, [])
-    return feed && feed.length > 0 && (
+    if (!feed) return <h1>Loading...</h1>;
+    if (feed.length === 0) return <h1>No Users Found</h1>;
+
+    return (
         <div className="flex flex-wrap justify-center gap-6 mt-10 px-4">
-            <UserCard user={feed[0]}></UserCard>
+            {feed.map((user) => (
+                <UserCard key={user._id} user={user} />
+            ))}
         </div>
     );
 };

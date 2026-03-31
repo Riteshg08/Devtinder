@@ -1,12 +1,12 @@
 const UserCard = ({ user }) => {
     if (!user) return null; 
-    const { firstName, lastName, age, gender, about } = user;
+    const { firstName, lastName, age, gender, about, photoUrl } = user;
     return (
         <div className="card bg-base-300 w-full sm:w-80 md:w-96 shadow-lg">
             <figure>
                 <img
-                    src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
-                    alt="Shoes" />
+                    src={photoUrl}
+                    alt="profile-picture" />
             </figure>
             <div className="card-body">
                 <h2 className="card-title">{firstName + " " + lastName}</h2>
@@ -19,5 +19,5 @@ const UserCard = ({ user }) => {
         </div>
     )
 };
-
+  
 export default UserCard;
