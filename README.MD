@@ -1,28 +1,116 @@
-IMP-1
+# DevTinder 🚀
 
-->while making the express server we use app.use with different routes so the route "/" should be placed at the bottom 
--> If we placed at the top it will be excuted every time becoz "/" to everything eg "/test", "/abc"
--> Order of the routes matters
+A full-stack MERN application that helps developers connect, network, and collaborate with other developers.
+
+## Features
+
+* User Authentication (JWT)
+* Login & Signup
+* Developer Profile Management
+* Send Connection Requests
+* Accept/Reject Requests
+* View Connections
+* Developer Feed
+* Secure Password Hashing with bcrypt
+* Responsive UI
+
+## Tech Stack
+
+### Frontend
+
+* React.js
+* Vite
+* Redux Toolkit
+* React Router DOM
+* Axios
+* Tailwind CSS / DaisyUI
+
+### Backend
+
+* Node.js
+* Express.js
+* MongoDB
+* Mongoose
+* JWT
+* bcrypt
+
+## Project Structure
+
+```text
+Devtinder/
+├── backend/
+├── frontend/
+├── apiList.md
+└── README.md
+```
+
+## Installation
+
+### Clone Repository
+
+```bash
+git clone https://github.com/your-username/Devtinder.git
+cd Devtinder
+```
+
+### Backend Setup
+
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+### Frontend Setup
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+## Environment Variables
+
+Create a `.env` file inside `backend`:
+
+```env
+PORT=7777
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_secret_key
+CLIENT_URL=http://localhost:5173
+```
+
+## API Endpoints
+
+### Authentication
+
+* POST /signup
+* POST /login
+* POST /logout
+
+### Profile
+
+* GET /profile/view
+* PATCH /profile/edit
+
+### Requests
+
+* POST /request/send/:status/:userId
+* POST /request/review/:status/:requestId
+
+### User
+
+* GET /user/connections
+* GET /user/requests/received
+* GET /feed
+
+## Future Enhancements
+
+* Real-time Chat
+* Notifications
+* Search and Filters
+* GitHub Integration
+* Email Verification
+* Dark Mode
 
 
-<!-- Postman -->
-It is an API developement and testing tool used to send http requests(diffrenet http request like get,post,put,patch,delete) to servers and analyze the responses
-
-<!-- IMP -->
-If a route handler does not send a response, the client request remains pending because the server keeps the connection open until a response is sent or a timeout occurs.
-
-<!-- IMP -->
-It is better to connect the database first before starting the server in applications using Node.js and Express.js with MongoDB.
-Once the server starts, it begins receiving API requests that may require database access.
-If the database is not connected, those requests may fail, so the database connection should be established first.
-
-
-<!-- Connecting Node.js application to MongoDB using mongoose -->
--A network request is sent to the MongoDB server.
--The server authenticates the credentials.
--A database connection is established.
--A response is sent back to the application.
-
-<!-- To add new Field  -->
-It is not possible to add new field that is not define in the schemas
--> To add we have to add {stict:false} in the schemas which allows us to add new field 

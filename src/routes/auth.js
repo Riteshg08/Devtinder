@@ -12,7 +12,7 @@ authRouter.post("/signup", async (req, res) => {
     //pushing a dynamic data given by the client in the request body to the user model
 
     try {
-        const { firstName, lastName, email, age, gender, password, skills, about } = req.body;
+        const { firstName, lastName, email, age, gender, password, skills, about , photoUrl} = req.body;
 
         //Data validation
         validateSignupData(req);
@@ -30,7 +30,8 @@ authRouter.post("/signup", async (req, res) => {
             gender,
             password: passwordHash,
             skills,
-            about
+            about,
+            photoUrl
         });
 
         //data sanitization
@@ -40,8 +41,11 @@ authRouter.post("/signup", async (req, res) => {
 
         //saving the user to the database
 
-        await user.save();
-        res.send("User is Added successfully!");
+        const savedUser = await user.save();
+        const token = await savedUser.getJWT();
+
+        res.cookie("SignupToken", token, { expires: new Date(Date.now() + 8 * 60 * 60 * 1000), httpOnly: true });
+        res.json({ message: "User is registered successfully!", data: savedUser });
     }
     catch (err) {
         res.status(400).send("Error: " + err.message);
@@ -54,7 +58,7 @@ authRouter.post("/login", async (req, res) => {
     try {
         const user = await User.findOne({ email: email });
         if (!user) {
-            return res.status(404).send("User not found!!");
+            return res.status(404).send("User does not found!");
         }
 
         //logic is writtenin the user model
@@ -71,7 +75,7 @@ authRouter.post("/login", async (req, res) => {
 
             // Add the token to cookie and send the response to the client
             res.cookie("token", token, { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), httpOnly: true });
-            res.send("User is logged successfully!!");
+            res.json({ user });
         }
     }
     catch (err) {

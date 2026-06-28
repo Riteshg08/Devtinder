@@ -13,7 +13,7 @@ userRouter.get("/user/request/received", authUser, async (req, res) => {
         const connectionRequest = await ConnectionRequest.find({
             toUserId: loggedInUser._id,
             status: "interested"
-        }).populate("fromUserId", "firstName lastName age skills about");
+        }).populate("fromUserId", "firstName lastName age skills about photoUrl");
 
         res.json({
             message: "Data is fetched successfully",
@@ -23,6 +23,7 @@ userRouter.get("/user/request/received", authUser, async (req, res) => {
     catch (err) {
         res.status(400).send("Error: " + err.message);
     }
+
 });
 
 //Showing all connection 
@@ -33,9 +34,9 @@ userRouter.get("/user/connection", authUser, async (req, res) => {
         const connectionRequest = await ConnectionRequest.find({
             $or: [
                 { toUserId: loggedInUser._id, status: "accepted" },
-                { fromUser: loggedInUser._id, status: "accepted" }
+                { fromUserId: loggedInUser._id, status: "accepted" }
             ]
-        }).populate("fromUserId", "firstName lastName age skills about").populate("toUserId", "firstName lastName age skills about");
+        }).populate("fromUserId", "firstName lastName age skills about photoUrl").populate("toUserId", "firstName lastName age skills about photoUrl");
 
         const data = connectionRequest.map((row) => {
             if (row.fromUserId._id.toString() === loggedInUser._id.toString()) {
@@ -59,8 +60,8 @@ userRouter.get("/feed", authUser, async (req, res) => {
         const loggedInUser = req.user;
         const page = parseInt(req.query.page) || 1;
         let limit = parseInt(req.query.limit) || 10;
-        limit = limit>50? 50 : limit;
-        const skipPages = (page-1)*limit;
+        limit = limit > 50 ? 50 : limit;
+        const skipPages = (page - 1) * limit;
 
         //In the feed we will see all the profiles except
         /* 1. Yourself
@@ -77,8 +78,12 @@ userRouter.get("/feed", authUser, async (req, res) => {
 
         const hideUsersFromFeed = new Set();
         connectionRequest.forEach((req) => {
-            hideUsersFromFeed.add(req.fromUserId.toString());
-            hideUsersFromFeed.add(req.toUserId.toString());
+            if (req.fromUserId.toString() !== loggedInUser._id.toString()) {
+                hideUsersFromFeed.add(req.fromUserId.toString());
+            }
+            if (req.toUserId.toString() !== loggedInUser._id.toString()) {
+                hideUsersFromFeed.add(req.toUserId.toString());
+            }
         });
 
         const users = await User.find({
@@ -87,11 +92,11 @@ userRouter.get("/feed", authUser, async (req, res) => {
                 { _id: { $ne: loggedInUser._id } }
             ]
         })
-        .select("firstName lastName age skills about")
-        .skip(skipPages)
-        .limit(limit);
+            .select("firstName lastName age skills about photoUrl")
+            .skip(skipPages)
+            .limit(limit);
 
-        res.json({users});
+        res.json({ users });
     }
     catch (err) {
         res.status(400).send("Error: " + err.message);
