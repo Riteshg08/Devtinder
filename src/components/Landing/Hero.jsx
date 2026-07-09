@@ -39,7 +39,7 @@ const Hero = () => {
         <div className="mt-10 flex gap-6">
 
           <Link
-            to="/login"
+            to="/signup"
             className="px-8 py-4 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:scale-105 duration-300"
           >
 
@@ -47,11 +47,11 @@ const Hero = () => {
 
           </Link>
 
-          <button className="px-8 py-4 rounded-2xl border border-gray-700 hover:bg-white/10">
+           <button className="px-8 py-4 rounded-2xl border border-gray-700 hover:bg-white/10">
 
             Explore Developers
 
-          </button>
+          </button> 
 
         </div>
 

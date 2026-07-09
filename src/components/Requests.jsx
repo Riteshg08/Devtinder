@@ -1,34 +1,61 @@
 import { useDispatch, useSelector } from "react-redux";
-import { addRequests } from "../utils/requestSlice";
-import { useEffect } from "react";
+import { addRequests, removeRequest } from "../utils/requestSlice";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
-import { removeRequest } from "../utils/requestSlice";
+import { UserPlus, Clock, MapPin } from "lucide-react";
+
+// small helper to turn a date into "2h ago" style text
+const timeAgo = (dateString) => {
+    if (!dateString) return "";
+    const seconds = Math.floor((new Date() - new Date(dateString)) / 1000);
+
+    if (seconds < 60) return "just now";
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return minutes + "m ago";
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return hours + "h ago";
+    const days = Math.floor(hours / 24);
+    return days + "d ago";
+};
 
 const Requests = () => {
     const requests = useSelector((state) => state.request);
     const dispatch = useDispatch();
 
+    const [activeTab, setActiveTab] = useState("received");
+    const [sentRequests, setSentRequests] = useState([]);
+
     const reviewRequest = async (status, _id) => {
-        console.log("Button clicked with status:", status, "and request ID:", _id);
         try {
-            const res = await axios.post(BASE_URL + "/request/review/" + status + "/" + _id, {}, {
-                withCredentials: true
-            });
+            await axios.post(
+                BASE_URL + "/request/review/" + status + "/" + _id,
+                {},
+                { withCredentials: true }
+            );
             dispatch(removeRequest(_id));
-        }
-        catch (err) {
+        } catch (err) {
             console.error(err.response?.data || err.message);
         }
-    }
+    };
 
     const fetchRequest = async () => {
         try {
-            const res = await axios.get(
-                BASE_URL + "/user/request/received",
-                { withCredentials: true }
-            );
+            const res = await axios.get(BASE_URL + "/user/request/received", {
+                withCredentials: true
+            });
             dispatch(addRequests(res?.data?.data));
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const fetchSentRequests = async () => {
+        try {
+            const res = await axios.get(BASE_URL + "/user/request/sent", {
+                withCredentials: true
+            });
+            setSentRequests(res?.data?.data || []);
         } catch (err) {
             console.error(err);
         }
@@ -36,57 +63,151 @@ const Requests = () => {
 
     useEffect(() => {
         fetchRequest();
+        fetchSentRequests();
     }, []);
 
-    if (!requests) return <h1 className="text-center mt-10">Loading...</h1>;
-    if (requests.length === 0)
-        return <h1 className="text-center mt-10">No Requests Found!</h1>;
+    const incomingCount = requests ? requests.length : 0;
+    const outgoingCount = sentRequests.length;
 
     return (
-        <div className="flex flex-col items-center my-10">
-            <h1 className="text-2xl font-bold mb-4">Requests</h1>
+        <div className="min-h-screen bg-[#0B1020] text-white p-10">
+            <h1 className="text-3xl font-bold mb-6">Connection Requests</h1>
 
-            {requests.map((req) => {
-                const user = req.fromUserId;
+            {/* Tab switcher - two big pill buttons side by side */}
+            <div className="flex gap-3 mb-8">
+                <button
+                    type="button"
+                    onClick={() => setActiveTab("received")}
+                    className={
+                        "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold " +
+                        (activeTab === "received"
+                            ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white"
+                            : "bg-base-300 text-gray-300")
+                    }
+                >
+                    <UserPlus size={18} />
+                    Incoming ({incomingCount})
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setActiveTab("sent")}
+                    className={
+                        "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold " +
+                        (activeTab === "sent"
+                            ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white"
+                            : "bg-base-300 text-gray-300")
+                    }
+                >
+                    <Clock size={18} />
+                    Outgoing ({outgoingCount})
+                </button>
+            </div>
 
-                return (
-                    <div
-                        key={req._id}
-                        className="flex items-center justify-between gap-4 p-4 border rounded-2xl shadow-md hover:shadow-lg transition duration-300 bg-white w-3xl cursor-pointer my-3"
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="w-16 h-16 flex-shrink-0">
-                                <img
-                                    alt="photo"
-                                    src={user.photoUrl}
-                                    className="w-full h-full object-cover rounded-full border"
-                                />
+            {/* Incoming tab */}
+            {activeTab === "received" && (
+                <div className="flex flex-col gap-4">
+                    {incomingCount === 0 && (
+                        <p className="text-center opacity-60 mt-10">No Requests Found!</p>
+                    )}
+
+                    {requests && requests.map((req) => {
+                        const user = req.fromUserId;
+
+                        return (
+                            <div key={req._id} className="bg-base-300 rounded-2xl p-5">
+                                <div className="flex justify-between items-start mb-3">
+                                    <div className="flex items-center gap-3">
+                                        <img
+                                            alt="photo"
+                                            src={user.photoUrl}
+                                            className="w-14 h-14 rounded-full object-cover"
+                                        />
+                                        <div>
+                                            <h2 className="font-semibold">
+                                                {user.firstName + " " + user.lastName}
+                                            </h2>
+                                            {user.title && (
+                                                <p className="text-sm text-indigo-400">{user.title}</p>
+                                            )}
+                                            {user.location && (
+                                                <p className="text-xs opacity-60 flex items-center gap-1 mt-1">
+                                                    <MapPin size={12} />
+                                                    {user.location}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <span className="text-xs opacity-50">{timeAgo(req.createdAt)}</span>
+                                </div>
+
+                                {user.skills && user.skills.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                        {user.skills.map((skill, index) => (
+                                            <span
+                                                key={index}
+                                                className="badge bg-base-100 border-none text-indigo-300 text-xs"
+                                            >
+                                                {skill}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+
+                                <div className="flex gap-3">
+                                    <button
+                                        className="flex-1 py-2 rounded-lg font-semibold bg-gradient-to-r from-indigo-500 to-purple-600"
+                                        onClick={() => reviewRequest("accepted", req._id)}
+                                    >
+                                        Accept
+                                    </button>
+                                    <button
+                                        className="flex-1 py-2 rounded-lg font-semibold bg-base-100 text-gray-300"
+                                        onClick={() => reviewRequest("rejected", req._id)}
+                                    >
+                                        Decline
+                                    </button>
+                                </div>
                             </div>
+                        );
+                    })}
+                </div>
+            )}
 
-                            <div className="text-left">
-                                <h2 className="text-lg font-semibold text-gray-800">
-                                    {user.firstName + " " + user.lastName}
-                                </h2>
-                                <p className="text-md text-gray-700">
-                                    {user.age} YO
-                                </p>
-                                <p className="text-sm text-gray-600 line-clamp-2">
-                                    {user.about}
-                                </p>
+            {/* Outgoing tab */}
+            {activeTab === "sent" && (
+                <div className="flex flex-col gap-4">
+                    {outgoingCount === 0 && (
+                        <p className="text-center opacity-60 mt-10">No Sent Requests Found!</p>
+                    )}
+
+                    {sentRequests.map((req) => {
+                        const user = req.toUserId;
+
+                        return (
+                            <div key={req._id} className="bg-base-300 rounded-2xl p-5">
+                                <div className="flex justify-between items-start">
+                                    <div className="flex items-center gap-3">
+                                        <img
+                                            alt="photo"
+                                            src={user.photoUrl}
+                                            className="w-14 h-14 rounded-full object-cover"
+                                        />
+                                        <div>
+                                            <h2 className="font-semibold">
+                                                {user.firstName + " " + user.lastName}
+                                            </h2>
+                                            {user.title && (
+                                                <p className="text-sm text-indigo-400">{user.title}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <span className="text-xs opacity-60 italic">Pending</span>
+                                </div>
                             </div>
-                        </div>
-
-                        <div className="card-actions justify-between py-1">
-                            <button className="btn bg-green-500 text-white border-none" onClick={() => reviewRequest("accepted", req._id)}>
-                                Accept
-                            </button>
-                            <button className="btn bg-red-500 text-white border-none" onClick={() => reviewRequest("rejected", req._id)}>
-                                Reject
-                            </button>
-                        </div>
-                    </div>
-                );
-            })}
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 };
