@@ -19,8 +19,7 @@ const Signup = () => {
     title: "",
     skills: []
   });
-  console.log("FirstName: ",formData.firstName);
-  console.log("LastName: ",formData.lastName);
+
   const [step, setStep] = useState(1);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -32,7 +31,6 @@ const Signup = () => {
       [field]: value
     });
   };
-  console.log("FormData: ",formData);
 
   const goNext = () => {
     setStep(step + 1);
@@ -61,9 +59,7 @@ const Signup = () => {
           withCredentials: true // needed so the login cookie gets saved
         }
       );
-       console.log(firstName);
-       console.log(lastName);
-      navigate("/feed");
+      navigate("/edit-profile");
     } catch (err) {
       // axios puts the backend's error message in err.response.data
       const message =

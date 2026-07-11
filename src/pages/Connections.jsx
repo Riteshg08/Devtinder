@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { addConnection } from "../utils/connectionSlice";
-import { MessageCircle, MoreHorizontal, Search } from "lucide-react";
+import { MessageCircle, MoreHorizontal, Search, UserMinus } from "lucide-react";
 
 const Connections = () => {
     const connection = useSelector(store => store.connections);
@@ -15,6 +15,23 @@ const Connections = () => {
                 withCredentials: true
             });
             dispatch(addConnection(res?.data?.data));
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const removeConnection = async (targetUserId, name) => {
+        const confirmed = window.confirm(
+            `Remove ${name} from your connections? This can't be undone.`
+        );
+
+        if (!confirmed) return;
+
+        try {
+            await axios.delete(BASE_URL + "/user/connections/" + targetUserId, {
+                withCredentials: true
+            });
+            dispatch(addConnection(connection.filter((conn) => conn._id !== targetUserId)));
         } catch (err) {
             console.error(err);
         }
@@ -86,11 +103,15 @@ const Connections = () => {
 
                         {/* right side: action buttons */}
                         <div className="flex items-center gap-2">
-                            <button className="btn btn-circle btn-sm border-none">
+                            <button className="btn btn-circle btn-sm bg-indigo-600 border-none">
                                 <MessageCircle size={16} />
                             </button>
-                            <button className="btn btn-circle btn-sm bg-base-100 border-none">
-                                <MoreHorizontal size={16} />
+                            <button
+                                onClick={() => removeConnection(conn._id, conn.firstName + " " + conn.lastName)}
+                                className="btn btn-circle btn-sm bg-base-100 hover:bg-red-500/20 hover:text-red-400 border-none"
+                                title="Remove connection"
+                            >
+                                <UserMinus size={16} />
                             </button>
                         </div>
                     </div>

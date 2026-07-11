@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import ProgressBar from "./ProgressBar";
+import { BASE_URL } from "../../utils/constants";
 
 const AccountStep = ({ formData, updateFormData, next }) => {
-  
+
 
   return (
     <div className="min-h-screen bg-[#0B1020] flex flex-col items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
@@ -26,13 +27,16 @@ const AccountStep = ({ formData, updateFormData, next }) => {
         </h2>
 
         {/* Social Buttons */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <button className="border border-gray-600 rounded-xl py-2 text-gray-300 hover:bg-white/5 transition">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-6">
+          <button className="border border-gray-600 rounded-xl py-2 sm:py-3 text-gray-300 hover:bg-white/5 transition">
             GitHub
           </button>
-          <button className="border border-gray-600 rounded-xl py-2 text-gray-300 hover:bg-white/5 transition">
+          <a
+            href={BASE_URL + "/auth/google"}
+            className="border border-gray-600 rounded-xl py-2 sm:py-3 text-gray-300 hover:bg-white/5 transition text-center"
+          >
             Google
-          </button>
+          </a>
         </div>
 
         {/* Divider */}
@@ -50,13 +54,13 @@ const AccountStep = ({ formData, updateFormData, next }) => {
             <label className="block text-gray-300 mb-1">
               First Name
             </label>
-            <input type="text" value={formData.firstName} onChange={(e)=> updateFormData("firstName",e.target.value)} placeholder="Jordan" className="w-full bg-[#0F172A] border border-gray-700 rounded-xl px-4 py-3 text-sm sm:text-base text-white outline-none focus:border-violet-500" />
+            <input type="text" value={formData.firstName} onChange={(e) => updateFormData("firstName", e.target.value)} placeholder="Jordan" className="w-full bg-[#0F172A] border border-gray-700 rounded-xl px-4 py-3 text-sm sm:text-base text-white outline-none focus:border-violet-500" />
           </div>
           <div className="flex flex-col">
             <label className="block text-gray-300 mb-1">
               Last Name
             </label>
-            <input type="text" value={formData.lasttName} onChange={(e)=> updateFormData("lastName",e.target.value)} placeholder="Lee" className="w-full bg-[#0F172A] border border-gray-700 rounded-xl px-4 py-3 text-sm sm:text-base text-white outline-none focus:border-violet-500" />
+            <input type="text" value={formData.lasttName} onChange={(e) => updateFormData("lastName", e.target.value)} placeholder="Lee" className="w-full bg-[#0F172A] border border-gray-700 rounded-xl px-4 py-3 text-sm sm:text-base text-white outline-none focus:border-violet-500" />
           </div>
         </div>
 
@@ -65,7 +69,7 @@ const AccountStep = ({ formData, updateFormData, next }) => {
           <label className="block text-gray-300 mb-1">
             Email
           </label>
-          <input type="email" value={formData.email} onChange={(e)=> updateFormData("email",e.target.value)} placeholder="you@example.com" className="w-full bg-[#0F172A] border border-gray-700 rounded-xl px-4 py-3 text-white outline-none focus:border-violet-500" />
+          <input type="email" value={formData.email} onChange={(e) => updateFormData("email", e.target.value)} placeholder="you@example.com" className="w-full bg-[#0F172A] border border-gray-700 rounded-xl px-4 py-3 text-white outline-none focus:border-violet-500" />
         </div>
 
         {/* Password */}
@@ -73,7 +77,7 @@ const AccountStep = ({ formData, updateFormData, next }) => {
           <label className="block text-gray-300 mb-1">
             Password
           </label>
-          <input type="password" value={formData.password} onChange={(e)=> updateFormData("password",e.target.value)} placeholder="********" className="w-full bg-[#0F172A] border border-gray-700 rounded-xl px-4 py-3 text-white outline-none focus:border-violet-500" />
+          <input type="password" value={formData.password} onChange={(e) => updateFormData("password", e.target.value)} placeholder="********" className="w-full bg-[#0F172A] border border-gray-700 rounded-xl px-4 py-3 text-white outline-none focus:border-violet-500" />
         </div>
 
         {/* Continue Button */}

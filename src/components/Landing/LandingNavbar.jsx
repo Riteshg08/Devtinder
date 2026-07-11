@@ -19,7 +19,7 @@ const LandingNavbar = () => {
         </li>
 
         <li className="hover:text-white cursor-pointer">
-          About
+          Bio
         </li>
 
       </ul>

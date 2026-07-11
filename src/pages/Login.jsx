@@ -64,9 +64,12 @@ const Login = () => {
                     <button className="border border-gray-600 rounded-xl py-2 sm:py-3 text-gray-300 hover:bg-white/5 transition">
                         GitHub
                     </button>
-                    <button className="border border-gray-600 rounded-xl py-2 sm:py-3 text-gray-300 hover:bg-white/5 transition">
+                    <a
+                        href={BASE_URL + "/auth/google"}
+                        className="border border-gray-600 rounded-xl py-2 sm:py-3 text-gray-300 hover:bg-white/5 transition text-center"
+                    >
                         Google
-                    </button>
+                    </a>
                 </div>
 
                 {/* Divider */}
@@ -153,7 +156,7 @@ const Login = () => {
                     Create account
                 </Link>
             </p>
-        </div>
+        </div >
     );
 };
 

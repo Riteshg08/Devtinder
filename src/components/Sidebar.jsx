@@ -104,7 +104,7 @@ function Sidebar() {
                     <span>Settings</span>
                 </Link>
 
-                <div className="flex items-center gap-3 px-5 pb-5">
+                <Link to="/profile" className="flex items-center gap-3 px-5 pb-5 hover:bg-gray-800 rounded-lg mx-2">
                     <img
                         src={user?.photoUrl}
                         alt="profile"
@@ -114,7 +114,7 @@ function Sidebar() {
                         <p className="font-semibold text-sm">{user?.firstName} {user?.lastName}</p>
                         <p className="text-xs text-gray-400">{user?.title}</p>
                     </div>
-                </div>
+                </Link>
             </div>
         </div>
     );

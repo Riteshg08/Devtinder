@@ -43,7 +43,7 @@ const Body = () => {
                 </div>
             )}
 
-            <div className="grow">
+            <div className="flex-1 flex justify-center">
                 <Outlet />
             </div>
         </div>
