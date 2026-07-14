@@ -71,9 +71,9 @@ const Signup = () => {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-bg">
       {errorMessage && (
-        <p className="text-red-400 text-center pt-4">{errorMessage}</p>
+        <p className="error-box max-w-lg mx-auto mt-4 text-center">{errorMessage}</p>
       )}
 
       {step === 1 && (

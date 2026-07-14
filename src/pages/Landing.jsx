@@ -1,14 +1,13 @@
-import LandingNavbar from "../components/landing/LandingNavbar";
-import Hero from "../components/landing/Hero";
-import Features from "../components/landing/Features";
-import Footer from "../components/landing/Footer";
+import LandingNavbar from "../components/Landing/LandingNavbar";
+import Hero from "../components/Landing/Hero";
+import Features from "../components/Landing/Features";
+import Footer from "../components/Landing/Footer";
 
 const Landing = () => {
   return (
-    <div className="relative overflow-hidden bg-[#0B1020] text-white">
-
-      {/* Background Glow */}
-      <div className="absolute left-1/2 top-52 -translate-x-1/2 w-[700px] h-[700px] rounded-full bg-violet-600/20 blur-[170px]"></div>
+    <div className="relative overflow-hidden bg-bg text-white w-full">
+      <div className="absolute left-1/2 top-32 -translate-x-1/2 w-[500px] sm:w-[700px] h-[500px] sm:h-[700px] rounded-full bg-violet-600/15 blur-[120px] pointer-events-none" />
+      <div className="absolute right-0 top-1/2 w-[300px] h-[300px] rounded-full bg-indigo-600/10 blur-[100px] pointer-events-none" />
 
       <div className="relative z-10">
         <LandingNavbar />
@@ -16,7 +15,6 @@ const Landing = () => {
         <Features />
         <Footer />
       </div>
-
     </div>
   );
 };

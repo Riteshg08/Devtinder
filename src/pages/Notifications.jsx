@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
-import { UserPlus, Heart, Eye, MessageCircle } from "lucide-react";
+import { UserPlus, Heart, Eye, MessageCircle, Bell } from "lucide-react";
 
 const timeAgo = (dateString) => {
     if (!dateString) return "";
@@ -15,7 +15,6 @@ const timeAgo = (dateString) => {
     return days + "d ago";
 };
 
-// pick an icon based on notification type
 const getIcon = (type) => {
     if (type === "request") return UserPlus;
     if (type === "match") return Heart;
@@ -43,7 +42,6 @@ const Notifications = () => {
             await axios.patch(BASE_URL + "/user/notifications/markAllRead", {}, {
                 withCredentials: true
             });
-            // update locally too, so the UI reflects it instantly
             setNotifications(notifications.map((n) => ({ ...n, isRead: true })));
         } catch (err) {
             console.error(err);
@@ -55,56 +53,70 @@ const Notifications = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-[#0B1020] text-white p-10">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold">Notifications</h1>
-                {notifications.length > 0 && (
-                    <button
-                        onClick={markAllRead}
-                        className="text-indigo-400 text-sm hover:underline"
-                    >
-                        Mark all read
-                    </button>
-                )}
-            </div>
+        <div className="bg-bg text-white page-container">
+            <div className="max-w-2xl mx-auto">
 
-            {notifications.length === 0 && (
-                <p className="text-center opacity-60 mt-10">No notifications yet!</p>
-            )}
-
-            <div className="flex flex-col gap-3">
-                {notifications.map((note) => {
-                    const Icon = getIcon(note.type);
-                    const user = note.fromUserId;
-
-                    return (
-                        <div
-                            key={note._id}
-                            className="flex items-center gap-4 bg-base-300 rounded-xl p-4"
+                <div className="flex justify-between items-center mb-6 gap-4">
+                    <div>
+                        <h1 className="page-title">Notifications</h1>
+                        <p className="page-subtitle">Stay updated on your network activity</p>
+                    </div>
+                    {notifications.length > 0 && (
+                        <button
+                            onClick={markAllRead}
+                            className="btn-ghost text-sm text-indigo-400 shrink-0"
                         >
-                            {user?.photoUrl ? (
-                                <img
-                                    src={user.photoUrl}
-                                    alt="photo"
-                                    className="w-12 h-12 rounded-full object-cover"
-                                />
-                            ) : (
-                                <div className="w-12 h-12 rounded-full bg-base-100 flex items-center justify-center">
-                                    <Icon size={20} />
-                                </div>
-                            )}
+                            Mark all read
+                        </button>
+                    )}
+                </div>
 
-                            <div className="flex-1">
-                                <p>{note.message}</p>
-                                <p className="text-xs opacity-50 mt-1">{timeAgo(note.createdAt)}</p>
-                            </div>
-
-                            {!note.isRead && (
-                                <span className="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
-                            )}
+                {notifications.length === 0 && (
+                    <div className="empty-state card">
+                        <div className="w-14 h-14 rounded-2xl bg-surface-elevated border border-border flex items-center justify-center mb-4">
+                            <Bell size={24} className="text-indigo-400" />
                         </div>
-                    );
-                })}
+                        <p className="text-gray-400 text-sm">No notifications yet!</p>
+                    </div>
+                )}
+
+                <div className="flex flex-col gap-3">
+                    {notifications.map((note) => {
+                        const Icon = getIcon(note.type);
+                        const user = note.fromUserId;
+
+                        return (
+                            <div
+                                key={note._id}
+                                className={
+                                    "flex items-center gap-3 sm:gap-4 card p-4 transition-colors " +
+                                    (!note.isRead ? "border-indigo-500/30 bg-surface-elevated" : "")
+                                }
+                            >
+                                {user?.photoUrl ? (
+                                    <img
+                                        src={user.photoUrl}
+                                        alt="photo"
+                                        className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border border-border shrink-0"
+                                    />
+                                ) : (
+                                    <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-surface-dark border border-border flex items-center justify-center shrink-0">
+                                        <Icon size={18} className="text-indigo-400" />
+                                    </div>
+                                )}
+
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm leading-relaxed">{note.message}</p>
+                                    <p className="text-xs text-gray-500 mt-1">{timeAgo(note.createdAt)}</p>
+                                </div>
+
+                                {!note.isRead && (
+                                    <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 shrink-0"></span>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );

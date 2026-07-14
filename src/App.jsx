@@ -9,12 +9,11 @@ import Feed from "./pages/Feed";
 import Connections from "./pages/Connections";
 import Requests from "./pages/Requests";
 import Signup from "./pages/Signup";
-import Search from "./pages/Search";
 import Messages from "./pages/Messages";
 import Notifications from "./pages/Notifications";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
-import Chat from "./pages/Chat";
+// import Chat from "./pages/Chat";
 import EditProfile from "./pages/EditProfile";
 
 function App() {
@@ -33,9 +32,8 @@ function App() {
               <Route path="/edit-profile" element={<EditProfile />} />
               <Route path="/connections" element={<Connections />} />
               <Route path="/requests" element={<Requests />} />
-              <Route path="/search" element={<Search />} />
               <Route path="/messages" element={<Messages />} />
-              <Route path="/messages/:targetUserId" element={<Chat />} />
+              {/* <Route path="/messages/:targetUserId" element={<Chat />} /> */}
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/settings" element={<Settings />} />

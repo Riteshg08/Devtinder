@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { BASE_URL } from '../utils/constants';
 import {
-    Home, Search, Users, UserPlus, MessageCircle, Bell, TrendingUp, Settings
+    Home, Search, Users, UserPlus, MessageCircle, Bell, TrendingUp, Settings, X
 } from 'lucide-react';
 
-function Sidebar() {
+function Sidebar({ onClose }) {
     const location = useLocation();
     const user = useSelector((store) => store.user);
 
-    // real counts, fetched from the backend
     const [unreadNotifications, setUnreadNotifications] = useState(0);
     const [pendingRequests, setPendingRequests] = useState(0);
 
@@ -42,10 +41,8 @@ function Sidebar() {
         fetchCounts();
     }, []);
 
-    // nav links - badge is now a number or 0 (0 means no badge shown)
     const navLinks = [
         { name: "Feed", path: "/feed", icon: Home },
-        { name: "Search", path: "/search", icon: Search },
         { name: "Connections", path: "/connections", icon: Users },
         { name: "Requests", path: "/requests", icon: UserPlus, badge: pendingRequests },
         { name: "Messages", path: "/messages", icon: MessageCircle, badge: 3 },
@@ -53,66 +50,87 @@ function Sidebar() {
         { name: "Dashboard", path: "/dashboard", icon: TrendingUp },
     ];
 
-    return (
-        <div className="bg-[#0B1020] flex flex-col text-white w-[280px] h-screen">
+    const isActive = (path) => {
+        if (path === "/messages") {
+            return location.pathname.startsWith("/messages");
+        }
+        return location.pathname === path;
+    };
 
-            <div className="flex items-center gap-3 m-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold">
-                    {"</>"}
-                </div>
-                <h1 className="text-lg sm:text-xl font-bold text-white">
-                    DevTinder
-                </h1>
+    return (
+        <div className="bg-bg flex flex-col text-white w-[280px] h-screen border-r border-border shrink-0 ">
+
+            <div className="flex items-center justify-between p-4 sm:p-5">
+                <Link to="/feed" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+                    <div className="logo-icon">{"</>"}</div>
+                    <h1 className="text-lg font-bold text-white">DevTinder</h1>
+                </Link>
+                <button
+                    onClick={onClose}
+                    className="lg:hidden btn-ghost p-1.5"
+                    aria-label="Close menu"
+                >
+                    <X size={20} />
+                </button>
             </div>
 
-            <hr className="text-gray-600" />
+            <div className="h-px bg-border mx-4" />
 
-            <div className="flex flex-col p-5 gap-1">
+            <nav className="flex flex-col p-3 gap-0.5 flex-1 overflow-y-auto">
                 {navLinks.map((link) => {
                     const Icon = link.icon;
-                    const isActive = location.pathname === link.path;
+                    const active = isActive(link.path);
 
                     return (
                         <Link
                             key={link.name}
                             to={link.path}
                             className={
-                                "flex items-center justify-between px-3 py-2 rounded-lg mb-1 " +
-                                (isActive ? "bg-indigo-600 text-white" : "text-gray-300 hover:bg-gray-800")
+                                "flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-200 " +
+                                (active
+                                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
+                                    : "text-gray-400 hover:bg-surface-elevated hover:text-white")
                             }
                         >
                             <div className="flex items-center gap-3">
                                 <Icon size={18} />
-                                <span>{link.name}</span>
+                                <span className="text-sm font-medium">{link.name}</span>
                             </div>
 
                             {link.badge > 0 && (
-                                <span className="bg-indigo-500 text-xs rounded-full px-2 py-0.5">
+                                <span className="bg-indigo-500 text-white text-xs font-semibold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1.5">
                                     {link.badge}
                                 </span>
                             )}
                         </Link>
                     );
                 })}
-            </div>
+            </nav>
 
-            <div className="mt-auto">
-                <hr className="text-gray-600" />
-
-                <Link to="/settings" className="flex items-center gap-3 px-5 py-4 text-gray-300 hover:text-white">
+            <div className="mt-auto border-t border-border">
+                <Link
+                    to="/settings"
+                    className={
+                        "flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-surface-elevated transition-colors " +
+                        (location.pathname === "/settings" ? "text-white bg-surface-elevated" : "")
+                    }
+                >
                     <Settings size={18} />
-                    <span>Settings</span>
+                    <span className="text-sm font-medium">Settings</span>
                 </Link>
 
-                <Link to="/profile" className="flex items-center gap-3 px-5 pb-5 hover:bg-gray-800 rounded-lg mx-2">
+                <Link
+                    to="/profile"
+                    className="flex items-center gap-3 px-4 py-4 hover:bg-surface-elevated transition-colors rounded"
+                >
                     <img
                         src={user?.photoUrl}
                         alt="profile"
-                        className="w-9 h-9 rounded-full object-cover"
+                        className="w-9 h-9 rounded-full object-cover border-2 border-border"
                     />
-                    <div>
-                        <p className="font-semibold text-sm">{user?.firstName} {user?.lastName}</p>
-                        <p className="text-xs text-gray-400">{user?.title}</p>
+                    <div className="min-w-0">
+                        <p className="font-semibold text-sm truncate">{user?.firstName} {user?.lastName}</p>
+                        <p className="text-xs text-gray-500 truncate">{user?.title}</p>
                     </div>
                 </Link>
             </div>

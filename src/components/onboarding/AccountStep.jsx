@@ -3,91 +3,89 @@ import ProgressBar from "./ProgressBar";
 import { BASE_URL } from "../../utils/constants";
 
 const AccountStep = ({ formData, updateFormData, next }) => {
-
-
   return (
-    <div className="min-h-screen bg-[#0B1020] flex flex-col items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
-      {/* Logo */}
+    <div className="min-h-screen bg-bg flex flex-col items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
       <div className="flex items-center gap-3 mb-5">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold">
-          {"</>"}
-        </div>
-        <h1 className="text-xl sm:text-2xl font-bold text-white">
-          DevTinder
-        </h1>
+        <div className="logo-icon w-10 h-10">{"</>"}</div>
+        <h1 className="text-xl sm:text-2xl font-bold text-white">DevTinder</h1>
       </div>
 
-      {/* Progress Bar */}
       <ProgressBar step={1} />
 
-      {/* Card */}
-      <div className="w-full max-w-lg bg-[#1E293B] rounded-2xl border border-gray-700 p-3 sm:p-5 lg:p-7 mt-3">
-        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white pb-3">
+      <div className="w-full max-w-lg card p-5 sm:p-7 mt-3 shadow-xl shadow-black/20">
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
           Create your account
         </h2>
 
-        {/* Social Buttons */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-6">
-          <button className="border border-gray-600 rounded-xl py-2 sm:py-3 text-gray-300 hover:bg-white/5 transition">
-            GitHub
-          </button>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
+          <button className="btn-secondary py-2.5 text-sm">GitHub</button>
           <a
             href={BASE_URL + "/auth/google"}
-            className="border border-gray-600 rounded-xl py-2 sm:py-3 text-gray-300 hover:bg-white/5 transition text-center"
+            className="btn-secondary py-2.5 text-sm text-center"
           >
             Google
           </a>
         </div>
 
-        {/* Divider */}
-        <div className="flex items-center my-2">
-          <div className="flex-1 h-px bg-gray-700"></div>
-          <span className="px-4 text-gray-500 text-sm">
-            or with email
-          </span>
-          <div className="flex-1 h-px bg-gray-700"></div>
+        <div className="flex items-center my-4">
+          <div className="flex-1 h-px bg-border" />
+          <span className="px-4 text-gray-500 text-sm">or with email</span>
+          <div className="flex-1 h-px bg-border" />
         </div>
 
-        {/* Full Name */}
-        <div className="mb-3 flex">
-          <div className="flex flex-col pr-10">
-            <label className="block text-gray-300 mb-1">
-              First Name
-            </label>
-            <input type="text" value={formData.firstName} onChange={(e) => updateFormData("firstName", e.target.value)} placeholder="Jordan" className="w-full bg-[#0F172A] border border-gray-700 rounded-xl px-4 py-3 text-sm sm:text-base text-white outline-none focus:border-violet-500" />
+        <div className="mb-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-gray-300 text-sm mb-1.5">First Name</label>
+            <input
+              type="text"
+              value={formData.firstName}
+              onChange={(e) => updateFormData("firstName", e.target.value)}
+              placeholder="Jordan"
+              className="input-field"
+            />
           </div>
-          <div className="flex flex-col">
-            <label className="block text-gray-300 mb-1">
-              Last Name
-            </label>
-            <input type="text" value={formData.lasttName} onChange={(e) => updateFormData("lastName", e.target.value)} placeholder="Lee" className="w-full bg-[#0F172A] border border-gray-700 rounded-xl px-4 py-3 text-sm sm:text-base text-white outline-none focus:border-violet-500" />
+          <div>
+            <label className="block text-gray-300 text-sm mb-1.5">Last Name</label>
+            <input
+              type="text"
+              value={formData.lastName}
+              onChange={(e) => updateFormData("lastName", e.target.value)}
+              placeholder="Lee"
+              className="input-field"
+            />
           </div>
         </div>
 
-        {/* Email */}
         <div className="mb-3">
-          <label className="block text-gray-300 mb-1">
-            Email
-          </label>
-          <input type="email" value={formData.email} onChange={(e) => updateFormData("email", e.target.value)} placeholder="you@example.com" className="w-full bg-[#0F172A] border border-gray-700 rounded-xl px-4 py-3 text-white outline-none focus:border-violet-500" />
+          <label className="block text-gray-300 text-sm mb-1.5">Email</label>
+          <input
+            type="email"
+            value={formData.email}
+            onChange={(e) => updateFormData("email", e.target.value)}
+            placeholder="you@example.com"
+            className="input-field"
+          />
         </div>
 
-        {/* Password */}
         <div>
-          <label className="block text-gray-300 mb-1">
-            Password
-          </label>
-          <input type="password" value={formData.password} onChange={(e) => updateFormData("password", e.target.value)} placeholder="********" className="w-full bg-[#0F172A] border border-gray-700 rounded-xl px-4 py-3 text-white outline-none focus:border-violet-500" />
+          <label className="block text-gray-300 text-sm mb-1.5">Password</label>
+          <input
+            type="password"
+            value={formData.password}
+            onChange={(e) => updateFormData("password", e.target.value)}
+            placeholder="********"
+            className="input-field"
+          />
         </div>
 
-        {/* Continue Button */}
-        <button onClick={next} className="w-full mt-5 py-3 sm:py-4 rounded-xl bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-600 text-white font-semibold hover:scale-[1.02] transition" >Continue → </button>
+        <button onClick={next} className="btn-primary w-full mt-5 py-3">
+          Continue →
+        </button>
       </div>
 
-      {/* Login */}
-      <p className="text-gray-400  text-sm sm:text-base mt-4 text-center">
+      <p className="text-gray-400 text-sm mt-4 text-center">
         Already have an account?{" "}
-        <Link to="/login" className="text-violet-400 hover:underline">
+        <Link to="/login" className="text-violet-400 hover:underline font-medium">
           Sign in
         </Link>
       </p>
