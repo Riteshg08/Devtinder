@@ -12,7 +12,7 @@ authRouter.post("/signup", async (req, res) => {
     //pushing a dynamic data given by the client in the request body to the user model
 
     try {
-        const { firstName, lastName, email,  password, title, skills} = req.body;
+        const { firstName, lastName, email, password, title, skills } = req.body;
 
         //Data validation
         validateSignupData(req);
@@ -71,7 +71,12 @@ authRouter.post("/login", async (req, res) => {
             const token = await user.getJWT();
 
             // Add the token to cookie and send the response to the client
-            res.cookie("token", token, { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), httpOnly: true });
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "none",
+                expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            });
             res.json({ user });
         }
     }
@@ -82,8 +87,10 @@ authRouter.post("/login", async (req, res) => {
 
 authRouter.post("/logout", async (req, res) => {
     try {
-        res.cookie("token", null, {
-            expires: new Date(Date.now()),
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
         });
         // res.clearCookie("token");
         res.send("User is logout successfully!!");
