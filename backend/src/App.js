@@ -20,6 +20,7 @@ const { messageRouter } = require('./routes/message');
 const { githubRouter } = require('./routes/github');
 const Message = require("./models/message");
 
+console.log("CLIENT_URL =", process.env.CLIENT_URL);
 app.use(cors({
     origin:process.env.CLIENT_URL,
     credentials: true
